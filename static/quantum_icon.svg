@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+  <!-- Quantum Computing Icon -->
+  <defs>
+    <linearGradient id="sphereGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8a2be2" />
+      <stop offset="100%" stop-color="#4b0082" />
+    </linearGradient>
+    <linearGradient id="orbitGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00bfff" />
+      <stop offset="100%" stop-color="#1e90ff" />
+    </linearGradient>
+    <linearGradient id="orbitGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6347" />
+      <stop offset="100%" stop-color="#ff4500" />
+    </linearGradient>
+    <linearGradient id="orbitGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#32cd32" />
+      <stop offset="100%" stop-color="#228b22" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feFlood flood-color="#4b0082" flood-opacity="0.3" result="glow" />
+      <feComposite in="glow" in2="blur" operator="in" result="glowBlur" />
+      <feBlend in="SourceGraphic" in2="glowBlur" mode="normal" />
+    </filter>
+  </defs>
+  
+  <!-- Main atom nucleus -->
+  <circle cx="48" cy="48" r="12" fill="url(#sphereGradient)" filter="url(#glow)" />
+  
+  <!-- Electron orbits -->
+  <ellipse cx="48" cy="48" rx="36" ry="18" stroke="url(#orbitGradient1)" stroke-width="2" fill="none" transform="rotate(0, 48, 48)" />
+  <ellipse cx="48" cy="48" rx="36" ry="18" stroke="url(#orbitGradient2)" stroke-width="2" fill="none" transform="rotate(60, 48, 48)" />
+  <ellipse cx="48" cy="48" rx="36" ry="18" stroke="url(#orbitGradient3)" stroke-width="2" fill="none" transform="rotate(120, 48, 48)" />
+  
+  <!-- Electrons -->
+  <circle cx="84" cy="48" r="5" fill="#00bfff" filter="url(#glow)" />
+  <circle cx="30" cy="75" r="5" fill="#ff6347" filter="url(#glow)" />
+  <circle cx="30" cy="21" r="5" fill="#32cd32" filter="url(#glow)" />
+  
+  <!-- Quantum bits -->
+  <circle cx="48" cy="48" r="2" fill="#ffffff" />
+  <circle cx="44" cy="46" r="1.5" fill="#ffffff" />
+  <circle cx="52" cy="50" r="1.5" fill="#ffffff" />
+</svg>
