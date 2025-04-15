@@ -1,4 +1,14 @@
 import streamlit as st
+
+# Set page configuration - must be the first Streamlit command
+st.set_page_config(
+    page_title="Quantum Nexus | Task Management",
+    page_icon="🌌",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Now import the remaining libraries
 import requests
 import pandas as pd
 import numpy as np
@@ -66,13 +76,8 @@ def api_request(endpoint, method="GET", data=None):
         st.error(f"Connection Error: {str(e)}")
         return None
 
-# Set page configuration
-st.set_page_config(
-    page_title="Quantum Task Management System",
-    page_icon="🔮",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Apply custom CSS
+load_css()
 
 # CSS for styling
 st.markdown("""
