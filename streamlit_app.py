@@ -935,7 +935,9 @@ elif selected == "Tasks":
             col1, col2 = st.columns(2)
             with col1:
                 assignee = st.text_input("Assignee (optional)", key="new_task_assignee")
-                priority = st.slider("Priority", 1, 5, 3, key="new_task_priority")
+                # Use the value from session_state if available, otherwise default to 3
+                default_priority = st.session_state.get("new_task_priority", 3)
+                priority = st.slider("Priority", 1, 5, default_priority, key="new_task_priority")
             
             with col2:
                 tags_input = st.text_input("Tags (comma-separated)", key="new_task_tags")
