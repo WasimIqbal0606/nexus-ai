@@ -33,13 +33,18 @@ import os
 # Import custom components for enhanced UI
 sys.path.append(os.path.join(os.path.dirname(__file__), '.streamlit'))
 try:
+    # Import basic custom components
     from custom_components import (
         load_css, 
         animated_title, 
         task_list_animation, 
-        animated_entanglement_network,
         bloch_sphere_animation
     )
+    
+    # Import advanced quantum visualizations
+    from enhanced_network_visualization import animated_entanglement_network
+    from quantum_simulation_visualizer import quantum_simulation_visualizer
+    from quantum_optimization_visualizer import quantum_optimization_visualizer
 except ImportError:
     # Define fallback functions in case import fails
     def load_css(): pass
@@ -47,8 +52,32 @@ except ImportError:
     def task_list_animation(tasks): 
         for task in tasks:
             st.write(f"**{task['title']}** - {task['state']}")
-    def animated_entanglement_network(vis_data): st.write("Network visualization not available")
-    def bloch_sphere_animation(state_vector): st.write("Bloch sphere visualization not available")
+    def animated_entanglement_network(vis_data): 
+        st.write("Enhanced network visualization not available")
+        # Basic network visualization fallback
+        if vis_data:
+            G = nx.Graph()
+            for node in vis_data.get('nodes', []):
+                G.add_node(node.get('id'), title=node.get('title'))
+            
+            for edge in vis_data.get('links', []):
+                G.add_edge(edge.get('source'), edge.get('target'))
+            
+            if len(G.nodes) > 0:
+                fig, ax = plt.subplots(figsize=(8, 5))
+                pos = nx.spring_layout(G, seed=42)
+                nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=500, ax=ax)
+                st.pyplot(fig)
+            else:
+                st.info("No nodes to visualize")
+    def bloch_sphere_animation(state_vector): 
+        st.write("Advanced Bloch sphere visualization not available")
+    def quantum_simulation_visualizer(simulation_data, height=700):
+        st.write("Advanced quantum simulation visualization not available")
+        st.json(simulation_data)
+    def quantum_optimization_visualizer(optimization_data, height=700):
+        st.write("Advanced task optimization visualization not available")
+        st.json(optimization_data)
 
 # Configure API URL (can be updated for ngrok)
 API_URL = "http://127.0.0.1:8000"  # Default local URL
@@ -1167,30 +1196,42 @@ elif selected == "Simulations":
         if st.session_state.simulation_results:
             simulation = st.session_state.simulation_results
             
-            st.markdown("### Simulation Results")
+            st.markdown("### Quantum Task Simulation")
+            st.markdown("Interactive visualization of quantum state evolution for the selected tasks.")
             
-            # Display tasks included in simulation
-            task_data = simulation.get('tasks', [])
-            if task_data:
-                st.markdown("**Tasks in Simulation:**")
-                for task in task_data:
-                    st.markdown(f"- {task.get('title')} (State: {task.get('state')}, Entropy: {task.get('entropy', 0):.2f})")
+            # Use our advanced quantum simulation visualizer
+            quantum_simulation_visualizer(simulation, height=700)
             
-            # Entanglement Matrix
-            entanglement_matrix = simulation.get('entanglement_matrix', [])
-            if entanglement_matrix:
-                st.markdown("**Entanglement Matrix:**")
-                
-                # Convert to DataFrame
-                df = pd.DataFrame(entanglement_matrix)
-                
-                # Use task titles as column names if available
+            # Show a summary of the tasks in an expander
+            with st.expander("Tasks in Simulation", expanded=False):
+                # Display tasks included in simulation
+                task_data = simulation.get('tasks', [])
                 if task_data:
-                    task_titles = [task.get('title', f"Task {i+1}")[:10] for i, task in enumerate(task_data)]
-                    df.columns = task_titles
-                    df.index = task_titles
-                
-                st.dataframe(df, use_container_width=True)
+                    for task in task_data:
+                        st.markdown(f"""
+                        <div class='task-card' style='padding:10px; margin:5px 0;'>
+                            <p class='task-title' style='margin:0;'>{task.get('title')}
+                                <span class='task-status status-{task.get('state', 'PENDING')}'>{task.get('state', 'PENDING')}</span>
+                            </p>
+                            <p style='margin:2px 0;'>Entropy: {task.get('entropy', 0):.2f} | Priority: {task.get('priority', 0)}/5</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+            
+            # Show the entanglement matrix in an expander
+            with st.expander("Entanglement Matrix", expanded=False):
+                # Entanglement Matrix
+                entanglement_matrix = simulation.get('entanglement_matrix', [])
+                if entanglement_matrix:
+                    # Convert to DataFrame
+                    df = pd.DataFrame(entanglement_matrix)
+                    
+                    # Use task titles as column names if available
+                    if task_data:
+                        task_titles = [task.get('title', f"Task {i+1}")[:10] for i, task in enumerate(task_data)]
+                        df.columns = task_titles
+                        df.index = task_titles
+                    
+                    st.dataframe(df, use_container_width=True)
             
             # Simulation Steps
             steps_data = simulation.get('simulation_steps', [])
@@ -1288,54 +1329,90 @@ elif selected == "Optimization":
     if st.session_state.optimization_result:
         result = st.session_state.optimization_result
         
-        st.markdown("### Optimization Results")
-        st.markdown(f"**Optimization Score:** {result.get('optimization_score', 0):.3f}")
-        st.markdown(f"**Tasks Assigned:** {result.get('task_count', 0)}")
+        # Use our advanced optimization visualizer with JavaScript animations
+        st.markdown("### Quantum Task Assignment Optimization")
+        st.markdown("Visualizing the quantum-inspired optimization of task assignments across team members.")
         
-        # Assignments
+        # Add enhanced optimization visualization with animations
+        quantum_optimization_visualizer(result, height=700)
+        
+        # Display task assignments in an expander for easy application
         assignments = result.get('assignments', {})
         if assignments:
-            st.markdown("**Recommended Task Assignments:**")
-            
-            # Get task details
-            task_dict = {task.get('id'): task for task in st.session_state.tasks}
-            
-            # Group tasks by assignee
-            assignee_tasks = {}
-            for task_id, assignee in assignments.items():
-                if assignee not in assignee_tasks:
-                    assignee_tasks[assignee] = []
+            with st.expander("Apply Recommended Task Assignments", expanded=True):
+                st.markdown("You can apply these AI-optimized assignments to your tasks:")
                 
                 # Get task details
-                task = task_dict.get(task_id, {'id': task_id, 'title': 'Unknown Task', 'priority': 0})
-                assignee_tasks[assignee].append(task)
-            
-            # Display grouped by assignee
-            for assignee, tasks in assignee_tasks.items():
-                with st.expander(f"{assignee} ({len(tasks)} tasks)", expanded=True):
-                    for task in tasks:
-                        st.markdown(f"""
-                        <div class='task-card'>
-                            <p class='task-title'>{task.get('title')}
-                                <span class='task-status status-{task.get('state', 'PENDING')}'>{task.get('state', 'PENDING')}</span>
-                            </p>
-                            <p>Priority: {task.get('priority', 0)}/5</p>
-                            <p class='small-text'>Entropy: {task.get('entropy', 0):.2f}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+                task_dict = {task.get('id'): task for task in st.session_state.tasks}
+                
+                # Group tasks by assignee
+                assignee_tasks = {}
+                for task_id, assignee in assignments.items():
+                    if assignee not in assignee_tasks:
+                        assignee_tasks[assignee] = []
                     
-                    # Add apply button
-                    if st.button(f"Apply Assignments for {assignee}", key=f"apply_{assignee}"):
-                        # Create tasks to update
+                    # Get task details
+                    task = task_dict.get(task_id, {'id': task_id, 'title': 'Unknown Task', 'priority': 0})
+                    assignee_tasks[assignee].append(task)
+                
+                # Display grouped by assignee with a more compact design
+                cols = st.columns(min(3, len(assignee_tasks)))
+                for i, (assignee, tasks) in enumerate(assignee_tasks.items()):
+                    with cols[i % len(cols)]:
+                        st.markdown(f"##### {assignee} ({len(tasks)} tasks)")
                         for task in tasks:
-                            task_id = task.get('id')
-                            update_data = {"assignee": assignee}
-                            update_task(task_id, update_data)
+                            st.markdown(f"""
+                            <div class='task-card' style='padding:10px; margin:5px 0;'>
+                                <p class='task-title' style='margin:0;'>{task.get('title')}
+                                    <span class='task-status status-{task.get('state', 'PENDING')}'>{task.get('state', 'PENDING')}</span>
+                                </p>
+                                <p style='margin:2px 0;'>Priority: {task.get('priority', 0)}/5</p>
+                            </div>
+                            """, unsafe_allow_html=True)
                         
-                        st.success(f"Assignments for {assignee} have been applied!")
-                        fetch_tasks()
+                        # Add apply button
+                        if st.button(f"Apply for {assignee}", key=f"apply_{assignee}"):
+                            # Create tasks to update
+                            for task in tasks:
+                                task_id = task.get('id')
+                                update_data = {"assignee": assignee}
+                                update_task(task_id, update_data)
+                            
+                            st.success(f"Assignments for {assignee} have been applied!")
+                            fetch_tasks()
         else:
             st.info("No assignments recommended. Try adding more tasks or team members.")
+            
+        # Add detailed explanation in an expander
+        with st.expander("How the Quantum Optimization Works"):
+            st.markdown("""
+            ### Quantum-Inspired Task Assignment Optimization
+            
+            This visualization shows a quantum-inspired optimization algorithm finding the optimal assignment
+            of tasks to team members, balancing several factors:
+            
+            1. **Team member expertise match** - Assigning tasks to people with relevant skills and expertise
+            2. **Workload balance** - Ensuring no one is overloaded with too many tasks
+            3. **Task dependencies** - Respecting the entanglement between related tasks
+            4. **Priority balancing** - Distributing high-priority tasks appropriately
+            5. **Cognitive load management** - Minimizing context-switching and mental overhead
+            
+            #### How It Works
+            
+            The algorithm models this as an energy minimization problem in a quantum energy landscape. Each possible 
+            task assignment configuration represents a point in this landscape, with suboptimal configurations having
+            higher energy and optimal ones at energy minima (valleys).
+            
+            The quantum annealing process explores this energy landscape by:
+            
+            - Starting from a random configuration (high energy state)
+            - Using quantum tunneling effects to explore many possible states simultaneously
+            - Gradually decreasing the temperature (annealing) to settle into an optimal low-energy state
+            - Accounting for quantum entanglement between related tasks to preserve task relationships
+            
+            The result is a task assignment configuration that optimizes team productivity and satisfaction while
+            maintaining critical task relationships.
+            """)
 
 elif selected == "Settings":
     st.markdown("<h1 class='main-header'>System Settings</h1>", unsafe_allow_html=True)
