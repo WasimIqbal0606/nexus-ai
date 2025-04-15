@@ -200,13 +200,37 @@ class QuantumSimulationRequest(BaseModel):
     decoherence_rate: float = 0.05
     measurement_type: str = "projective"  # projective, POVM, weak
 
-# --- In-memory database ---
-tasks = {}
-entanglements = {}
+# --- Database setup ---
+from sqlitedict import SqliteDict
+from diskcache import Cache
+
+# Create data directory if it doesn't exist
+os.makedirs('data', exist_ok=True)
+
+# Initialize persistent storage
+tasks_db = SqliteDict('./data/tasks.sqlite', autocommit=True)
+entanglements_db = SqliteDict('./data/entanglements.sqlite', autocommit=True)
+cache = Cache('./data/cache')
+
+# Convert to regular dictionaries for compatibility with existing code
+tasks = {k: v for k, v in tasks_db.items()} if tasks_db else {}
+entanglements = {k: v for k, v in entanglements_db.items()} if entanglements_db else {}
 task_graph = nx.Graph()
 
 # Vector store for semantic search
 vector_store = None
+
+# Helper function to save tasks
+def save_task(task_id, task_data):
+    """Save task to persistent storage"""
+    tasks[task_id] = task_data  # Update in-memory cache
+    tasks_db[task_id] = task_data  # Update persistent storage
+    
+# Helper function to save entanglements
+def save_entanglement(entanglement_id, entanglement_data):
+    """Save entanglement to persistent storage"""
+    entanglements[entanglement_id] = entanglement_data  # Update in-memory cache
+    entanglements_db[entanglement_id] = entanglement_data  # Update persistent storage
 
 # --- Advanced Quantum-inspired utility functions ---
 @lru_cache(maxsize=128)
