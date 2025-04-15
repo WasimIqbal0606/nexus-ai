@@ -808,13 +808,13 @@ async def create_task_api(task_data: TaskCreate, background_tasks: BackgroundTas
             # Update entropy and quantum state
             update_task_entropy(task_id)
             
-            # Save updated task
-            tasks[task_id] = task
+            # Save updated task to persistent storage
+            save_task(task_id, task)
         except Exception as e:
             logger.error(f"Background ML tasks error: {str(e)}")
     
     # Store task first to make it available immediately
-    tasks[task_id] = task
+    save_task(task_id, task)
     
     # Add to graph
     task_graph.add_node(task_id, title=task.title, state=task.state)
@@ -884,7 +884,7 @@ async def update_task_api(task_id: str, task_update: TaskUpdate, background_task
         background_tasks.add_task(background_update)
     
     # Update task immediately to reflect changes
-    tasks[task_id] = task
+    save_task(task_id, task)
     
     return task
 

@@ -13,6 +13,32 @@ import time
 from datetime import datetime, timedelta
 import altair as alt
 from streamlit_option_menu import option_menu
+from streamlit_extras.add_vertical_space import add_vertical_space
+from streamlit_extras.colored_header import colored_header
+from streamlit_extras.metric_cards import style_metric_cards
+from streamlit_extras.card import card
+import sys
+import os
+
+# Import custom components for enhanced UI
+sys.path.append(os.path.join(os.path.dirname(__file__), '.streamlit'))
+try:
+    from custom_components import (
+        load_css, 
+        animated_title, 
+        task_list_animation, 
+        animated_entanglement_network,
+        bloch_sphere_animation
+    )
+except ImportError:
+    # Define fallback functions in case import fails
+    def load_css(): pass
+    def animated_title(): st.title("Quantum Nexus - Task Management")
+    def task_list_animation(tasks): 
+        for task in tasks:
+            st.write(f"**{task['title']}** - {task['state']}")
+    def animated_entanglement_network(vis_data): st.write("Network visualization not available")
+    def bloch_sphere_animation(state_vector): st.write("Bloch sphere visualization not available")
 
 # Configure API URL (can be updated for ngrok)
 API_URL = "http://127.0.0.1:8000"  # Default local URL
