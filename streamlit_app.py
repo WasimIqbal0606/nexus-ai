@@ -939,15 +939,10 @@ elif selected == "Tasks":
                     
                     # Create task
                     if create_task(task_data):
-                        # Clear form
-                        st.session_state.new_task_title = ""
-                        st.session_state.new_task_description = ""
-                        st.session_state.new_task_assignee = ""
-                        st.session_state.new_task_tags = ""
-                        st.session_state.new_task_priority = 3
-                        st.session_state.new_task_due_date = None
-                        
-                        st.success("Task created successfully!")
+                        # Use success message instead of trying to reset form values
+                        st.success("Task created successfully! You can create another task or navigate to the Tasks page to view it.")
+                        # Reset the form on the next rerun by using query parameters in URL
+                        st.experimental_set_query_params(reset_form='true')
     
     with tab3:
         st.subheader("Search Tasks")
@@ -1229,7 +1224,7 @@ elif selected == "Simulations":
                                     fig = px.bar(df, x="State", y="Probability", text="Probability")
                                     fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
                                     fig.update_layout(height=250)
-                                    st.plotly_chart(fig, use_container_width=True)
+                                    st.plotly_chart(fig, use_container_width=True, key=f"prob_dist_{task_id}")
                         
                         with col2:
                             # Display quantum state visualization for one task
@@ -1256,7 +1251,7 @@ elif selected == "Simulations":
                                                     vec = vec / np.linalg.norm(vec)
                                                 
                                                 bloch_fig = generate_bloch_sphere(vec)
-                                                st.plotly_chart(bloch_fig, use_container_width=True)
+                                                st.plotly_chart(bloch_fig, use_container_width=True, key=f"bloch_{selected_task_id}")
                                             else:
                                                 st.info("Insufficient data for Bloch sphere visualization")
                                     else:
