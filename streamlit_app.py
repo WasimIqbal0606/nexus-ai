@@ -1267,7 +1267,7 @@ elif selected == "Simulations":
                                     fig = px.bar(df, x="State", y="Probability", text="Probability")
                                     fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
                                     fig.update_layout(height=250)
-                                    st.plotly_chart(fig, use_container_width=True, key=f"prob_dist_{task_id}")
+                                    st.plotly_chart(fig, use_container_width=True, key=f"prob_dist_{task_id}_{i}")
                         
                         with col2:
                             # Display quantum state visualization for one task
